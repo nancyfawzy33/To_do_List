@@ -24,7 +24,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       appBar: AppBar(
         title: const Text('Register'),
         backgroundColor: Colors.blue,
-        foregroundColor: Colors.white,
+        foregroundColor: Colors.white24,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
