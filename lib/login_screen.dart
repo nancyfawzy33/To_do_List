@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'register_screen.dart';
+import 'forgot_password_screen.dart';
+import 'main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
 
   bool _isObscure = true;
+  bool _rememberMe = false;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +26,23 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: const Text('Login'),
         centerTitle: true,
+        actions: [
+
+          IconButton(
+            icon: Icon(
+              themeNotifier.value == ThemeMode.light
+                  ? Icons.dark_mode
+                  : Icons.light_mode,
+            ),
+            onPressed: () {
+              setState(() {
+                themeNotifier.value = themeNotifier.value == ThemeMode.light
+                    ? ThemeMode.dark
+                    : ThemeMode.light;
+              });
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -31,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 40),
 
               const Text(
-                'Welcome Back👋 obour city',
+                'Welcome Back👋\nobour city',
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
@@ -54,16 +76,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-
                   if (!value.contains('@')) {
                     return 'Email must contain @';
                   }
-
                   return null;
                 },
               ),
 
               const SizedBox(height: 20),
+
 
               TextFormField(
                 controller: _passwordController,
@@ -74,9 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   prefixIcon: const Icon(Icons.lock),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _isObscure
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      _isObscure ? Icons.visibility_off : Icons.visibility,
                     ),
                     onPressed: () {
                       setState(() {
@@ -89,20 +108,48 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your password';
                   }
-
                   if (value.length < 6) {
                     return 'Password must be at least 6 characters';
                   }
-
                   return null;
                 },
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 10),
+
+
+              Row(
+                children: [
+                  Checkbox(
+                    value: _rememberMe,
+                    onChanged: (value) {
+                      setState(() {
+                        _rememberMe = value!;
+                      });
+                    },
+                  ),
+                  const Text('Remember Me', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
 
               ElevatedButton(
-                onPressed: () {
+                onPressed: _isLoading
+                    ? null
+                    : () async {
                   if (_formKey.currentState!.validate()) {
+                    setState(() {
+                      _isLoading = true;
+                    });
+
+                    await Future.delayed(const Duration(seconds: 1));
+
+                    setState(() {
+                      _isLoading = false;
+                    });
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Login successful!'),
@@ -114,9 +161,52 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
-                child: const Text(
+                child: _isLoading
+                    ? const SizedBox(
+                  height: 22,
+                  width: 22,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2.5,
+                  ),
+                )
+                    : const Text(
                   'Login',
                   style: TextStyle(fontSize: 18),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegisterScreen(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Don\'t have an account? Register',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+
+
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ForgotPasswordScreen(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Forgot Password?',
+                  style: TextStyle(fontSize: 15, color: Colors.deepPurpleAccent),
                 ),
               ),
             ],
